@@ -57,6 +57,7 @@ class MediaFragment : Fragment() {
     }
 
     private fun notifyResult(uri: Uri?) {
+        Log.i(MediaFragment::class.java.simpleName, "notifyResult ${uri} ${this}")
         _callback?.onResult(uri)
     }
 
