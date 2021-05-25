@@ -56,6 +56,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun clickCamera() {
+        FMediaCamera.setCallback(_cameraCallback)
         FMediaCamera.getImage(this)
     }
 
