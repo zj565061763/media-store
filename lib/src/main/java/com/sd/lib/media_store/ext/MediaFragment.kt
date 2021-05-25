@@ -19,6 +19,7 @@ class MediaFragment : Fragment() {
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
+        Log.i(MediaFragment::class.java.simpleName, "onAttach callback:${_callback} ${this}")
         if (!this::_mediaStore.isInitialized) {
             _mediaStore = MediaStoreCompat(context as Activity, this).also {
                 it.setCaptureStrategy(CaptureStrategyFactory.defaultStrategy(context))
@@ -40,19 +41,34 @@ class MediaFragment : Fragment() {
                         Intent.FLAG_GRANT_WRITE_URI_PERMISSION or Intent.FLAG_GRANT_READ_URI_PERMISSION
                     )
                 }
-                SingleMediaScanner(fragmentActivity.applicationContext, filePath) { Log.i("MediaFragment", "scan finish!") }
+                SingleMediaScanner(fragmentActivity.applicationContext, filePath) {
+                    Log.i(MediaFragment::class.java.simpleName, "scan finish!")
+                }
                 notifyResult(fileUri)
             } else {
                 notifyResult(null)
             }
 
-            fragmentActivity.supportFragmentManager.beginTransaction()
-                .remove(this).commitNowAllowingStateLoss()
+            fragmentActivity.supportFragmentManager
+                .beginTransaction()
+                .remove(this)
+                .commitNowAllowingStateLoss()
         }
     }
 
     private fun notifyResult(uri: Uri?) {
         _callback?.onResult(uri)
+    }
+
+    override fun onDetach() {
+        super.onDetach()
+        Log.i(MediaFragment::class.java.simpleName, "onDetach ${this}")
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Log.i(MediaFragment::class.java.simpleName, "onDestroy ${this}")
+        _callback = null
     }
 
     companion object {
