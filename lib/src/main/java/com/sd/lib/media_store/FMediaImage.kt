@@ -40,7 +40,7 @@ object FMediaImage {
 
         return ContentValues().apply {
             this.put(MediaStore.Images.ImageColumns.TITLE, uuid)
-            this.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, uuid)
+            this.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "${uuid}.${finalExt}")
             this.put(MediaStore.Images.ImageColumns.DESCRIPTION, uuid)
             this.put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
 
