@@ -9,6 +9,7 @@ internal object LibUtils {
     /**
      * 将[inputStream]内容保存到[uri]
      */
+    @JvmStatic
     fun saveToUri(uri: Uri, inputStream: InputStream?, resolver: ContentResolver): Uri? {
         try {
             resolver.openOutputStream(uri)?.use { output ->
@@ -26,6 +27,7 @@ internal object LibUtils {
         return null
     }
 
+    @JvmStatic
     fun getExt(url: String?): String {
         if (url == null) return ""
         var ext = MimeTypeMap.getFileExtensionFromUrl(url)

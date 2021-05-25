@@ -33,6 +33,7 @@ object FMediaVideo {
         return LibUtils.saveToUri(uri, file.inputStream(), resolver)
     }
 
+    @JvmStatic
     private fun createContentValues(ext: String): ContentValues {
         val uuid = UUID.randomUUID().toString()
         val finalExt = if (ext.isNotEmpty()) ext else "mp4"
