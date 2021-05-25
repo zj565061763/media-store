@@ -14,10 +14,7 @@ import com.zhihu.matisse.internal.utils.SingleMediaScanner
 
 class MediaFragment : Fragment() {
     private val REQUEST_CODE_CAMERA = 413
-
     private var _mediaStore: MediaStoreCompat? = null
-        private set
-
     private var _callback: FMediaCamera.Callback? = null
 
     override fun onAttach(context: Context) {
