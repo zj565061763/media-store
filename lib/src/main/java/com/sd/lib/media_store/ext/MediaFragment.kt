@@ -61,11 +61,6 @@ class MediaFragment : Fragment() {
         _callback?.onResult(uri)
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        Log.i(MediaFragment::class.java.simpleName, "onDetach ${this}")
-    }
-
     override fun onDestroy() {
         super.onDestroy()
         Log.i(MediaFragment::class.java.simpleName, "onDestroy ${this}")
