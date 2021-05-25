@@ -5,7 +5,7 @@ plugins {
 }
 
 def libGroupId = "com.sd.lib.android"
-def libArtifactId = "io"
+def libArtifactId = "media-store"
 def libVersionCode = 20210525
 def libVersionName = "1.0.0-alpha01"
 
