@@ -1,24 +1,22 @@
 package com.sd.demo.media_store
 
+import android.content.Intent
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.media_store.databinding.ActivityMainBinding
-import com.sd.lib.dldmgr.DownloadInfo
-import com.sd.lib.dldmgr.FDownloadManager
-import com.sd.lib.dldmgr.IDownloadManager
-import com.sd.lib.media_store.FMediaImage
-import com.sd.lib.media_store.FMediaVideo
+import com.sd.lib.media_store.FMediaCamera
+import com.sd.lib.media_store.ext.CaptureStrategyFactory
 import com.yanzhenjie.permission.AndPermission
 import com.yanzhenjie.permission.runtime.Permission
-import java.io.File
-import java.util.*
+import com.zhihu.matisse.Matisse
+import com.zhihu.matisse.MimeType
+import com.zhihu.matisse.engine.impl.GlideEngine
 
 class MainActivity : AppCompatActivity(), View.OnClickListener {
-    val TAG = MainActivity::class.java.simpleName
-    val URL_IMAGE = "http://ilvbfanwe.oss-cn-shanghai.aliyuncs.com///public/attachment/test/noavatar_1.JPG"
-    val URL_VIDEO = "http://1251020758.vod2.myqcloud.com/8a96e57evodgzp1251020758/602d1d1a5285890800849942893/tRGP04QVdCEA.mp4"
+    private val TAG = MainActivity::class.java.simpleName
+    private val REQUEST_CODE = 1223
 
     private lateinit var _binding: ActivityMainBinding
 
@@ -26,79 +24,58 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
         super.onCreate(savedInstanceState)
         _binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(_binding.root)
+
+        AndPermission.with(this@MainActivity).runtime()
+            .permission(Permission.Group.STORAGE)
+            .onGranted {
+            }.onDenied {
+                finish()
+            }.start()
     }
 
     override fun onClick(v: View?) {
         when (v) {
-            _binding.btnClickImage -> {
-                clickImage()
+            _binding.btnDefault -> {
+                clickDefault()
             }
-            _binding.btnClickVideo -> {
-                clickVideo()
+            _binding.btnCamera -> {
+                clickCamera()
             }
+        }
+    }
+
+    private fun clickDefault() {
+        Matisse.from(this)
+            .choose(MimeType.ofImage())
+            .capture(true)
+            .captureStrategy(CaptureStrategyFactory.defaultStrategy(this))
+            .countable(true)
+            .maxSelectable(2)
+            .imageEngine(GlideEngine())
+            .forResult(REQUEST_CODE)
+    }
+
+    private fun clickCamera() {
+        FMediaCamera.getImage(this)
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
+            val listUri = Matisse.obtainResult(data)
+            Log.i(TAG, "onActivityResult:${listUri}")
         }
     }
 
     /**
-     * 保存图片
+     * 摄像头回调
      */
-    private fun clickImage() {
-        val addTask = FDownloadManager.default.addTask(URL_IMAGE)
-        if (addTask) {
-            FDownloadManager.default.addUrlCallback(URL_IMAGE, object : IDownloadManager.Callback {
-                override fun onPrepare(info: DownloadInfo) {
-                }
-
-                override fun onProgress(info: DownloadInfo) {
-                }
-
-                override fun onSuccess(info: DownloadInfo, file: File) {
-                    AndPermission.with(this@MainActivity).runtime()
-                        .permission(Permission.Group.STORAGE)
-                        .onGranted {
-                            val uri = FMediaImage.saveFile(file, applicationContext)
-                            Log.i(TAG, "image saveFile:${uri}")
-                        }.onDenied {
-                            finish()
-                        }.start()
-                }
-
-                override fun onError(info: DownloadInfo) {
-                }
-            })
-        }
-    }
-
-    private fun clickVideo() {
-        val addTask = FDownloadManager.default.addTask(URL_VIDEO)
-        if (addTask) {
-            FDownloadManager.default.addUrlCallback(URL_VIDEO, object : IDownloadManager.Callback {
-                override fun onPrepare(info: DownloadInfo) {
-                }
-
-                override fun onProgress(info: DownloadInfo) {
-                }
-
-                override fun onSuccess(info: DownloadInfo, file: File) {
-                    AndPermission.with(this@MainActivity).runtime()
-                        .permission(Permission.Group.STORAGE)
-                        .onGranted {
-                            val uri = FMediaVideo.saveFile(file, applicationContext)
-                            Log.i(TAG, "video saveFile:${uri}")
-                        }.onDenied {
-                            finish()
-                        }.start()
-                }
-
-                override fun onError(info: DownloadInfo) {
-                }
-            })
-        }
+    private val _cameraCallback = FMediaCamera.Callback {
+        Log.i(TAG, "camera result:${it}")
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        FDownloadManager.default.cancelTask(URL_IMAGE)
-        FDownloadManager.default.cancelTask(URL_VIDEO)
+        FMediaCamera.removeCallback(_cameraCallback)
     }
 }
