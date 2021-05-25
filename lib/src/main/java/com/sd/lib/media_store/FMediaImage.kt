@@ -16,8 +16,8 @@ object FMediaImage {
      * 保存图片文件
      */
     @JvmStatic
-    fun saveFile(file: File, context: Context): Uri? {
-        if (!file.exists()) return null
+    fun saveFile(file: File?, context: Context): Uri? {
+        if (file == null || !file.exists()) return null
 
         val ext = LibUtils.getExt(file.absolutePath)
         val contentValues = createContentValues(ext)
