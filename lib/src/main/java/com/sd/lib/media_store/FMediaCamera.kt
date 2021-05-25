@@ -2,6 +2,7 @@ package com.sd.lib.media_store
 
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
+import com.sd.lib.media_store.ext.MediaFragment
 
 object FMediaCamera {
     private var _fragment: MediaFragment? = null
@@ -33,27 +34,25 @@ object FMediaCamera {
     }
 
     private fun startFragment(activity: FragmentActivity) {
-        if (_fragment != null) return
+        if (_fragment == null) {
+            _fragment = MediaFragment().also {
+                it.callback = object : MediaFragment.Callback {
+                    override fun onResult(uri: Uri?) {
+                        _fragment = null
+                        if (uri != null) {
+                            _callback?.onResult(uri)
+                        }
+                    }
 
-        val fragment = object : MediaFragment() {
-            override fun onResult(uri: Uri?) {
-                _fragment = null
-                if (uri != null) {
-                    _callback?.onResult(uri)
+                    override fun onDetach() {
+                        _fragment = null
+                    }
                 }
-            }
-
-            override fun onDetach() {
-                super.onDetach()
-                _fragment = null
+                activity.supportFragmentManager.beginTransaction()
+                    .add(it, null).commitNowAllowingStateLoss()
             }
         }
-
-        activity.supportFragmentManager.beginTransaction()
-            .add(fragment, null).commitNowAllowingStateLoss()
-        _fragment = fragment
     }
-
 
     fun interface Callback {
         fun onResult(uri: Uri)

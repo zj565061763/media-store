@@ -1,4 +1,4 @@
-package com.sd.lib.media_store
+package com.sd.lib.media_store.ext
 
 import android.app.Activity
 import android.content.Context
@@ -7,19 +7,20 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.fragment.app.Fragment
-import com.sd.lib.media_store.ext.CaptureStrategyFactory
 import com.zhihu.matisse.internal.utils.MediaStoreCompat
 import com.zhihu.matisse.internal.utils.SingleMediaScanner
 
-internal abstract class MediaFragment : Fragment() {
+class MediaFragment : Fragment() {
     private val REQUEST_CODE_CAMERA = 413
 
-    var mediaStore: MediaStoreCompat? = null
+    private var _mediaStore: MediaStoreCompat? = null
         private set
+
+    var callback: Callback? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        mediaStore = MediaStoreCompat(context as Activity, this).also {
+        _mediaStore = MediaStoreCompat(context as Activity, this).also {
             it.setCaptureStrategy(CaptureStrategyFactory.defaultStrategy(context))
             it.dispatchCaptureIntent(context, REQUEST_CODE_CAMERA)
         }
@@ -30,7 +31,7 @@ internal abstract class MediaFragment : Fragment() {
         if (requestCode == REQUEST_CODE_CAMERA) {
             val fragmentActivity = requireActivity()
             if (resultCode == Activity.RESULT_OK) {
-                val compat = mediaStore!!
+                val compat = _mediaStore!!
                 val fileUri: Uri = compat.currentPhotoUri
                 val filePath: String = compat.currentPhotoPath
 
@@ -41,9 +42,9 @@ internal abstract class MediaFragment : Fragment() {
                     )
                 }
                 SingleMediaScanner(fragmentActivity.applicationContext, filePath) { Log.i("MediaFragment", "scan finish!") }
-                onResult(fileUri)
+                callback?.onResult(fileUri)
             } else {
-                onResult(null)
+                callback?.onResult(null)
             }
 
             fragmentActivity.supportFragmentManager.beginTransaction()
@@ -51,5 +52,14 @@ internal abstract class MediaFragment : Fragment() {
         }
     }
 
-    protected abstract fun onResult(uri: Uri?)
+    override fun onDetach() {
+        super.onDetach()
+        callback?.onDetach()
+    }
+
+    interface Callback {
+        fun onResult(uri: Uri?)
+
+        fun onDetach()
+    }
 }
