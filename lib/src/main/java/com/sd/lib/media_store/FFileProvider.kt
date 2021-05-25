@@ -1,4 +1,4 @@
-package com.sd.lib.media_store.uri
+package com.sd.lib.media_store
 
 import android.content.Context
 import android.net.Uri

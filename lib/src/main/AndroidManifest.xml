@@ -4,7 +4,7 @@
 
     <application>
         <provider
-            android:name=".uri.FFileProvider"
+            android:name=".FFileProvider"
             android:authorities="${applicationId}.ffileprovider"
             android:exported="false"
             android:grantUriPermissions="true">
