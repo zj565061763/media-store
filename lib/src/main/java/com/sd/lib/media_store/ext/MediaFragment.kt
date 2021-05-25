@@ -14,14 +14,16 @@ import com.zhihu.matisse.internal.utils.SingleMediaScanner
 
 class MediaFragment : Fragment() {
     private val REQUEST_CODE_CAMERA = 413
-    private var _mediaStore: MediaStoreCompat? = null
+    private lateinit var _mediaStore: MediaStoreCompat
     private var _callback: FMediaCamera.Callback? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
-        _mediaStore = MediaStoreCompat(context as Activity, this).also {
-            it.setCaptureStrategy(CaptureStrategyFactory.defaultStrategy(context))
-            it.dispatchCaptureIntent(context, REQUEST_CODE_CAMERA)
+        if (!this::_mediaStore.isInitialized) {
+            _mediaStore = MediaStoreCompat(context as Activity, this).also {
+                it.setCaptureStrategy(CaptureStrategyFactory.defaultStrategy(context))
+                it.dispatchCaptureIntent(context, REQUEST_CODE_CAMERA)
+            }
         }
     }
 
@@ -30,10 +32,8 @@ class MediaFragment : Fragment() {
         if (requestCode == REQUEST_CODE_CAMERA) {
             val fragmentActivity = requireActivity()
             if (resultCode == Activity.RESULT_OK) {
-                val compat = _mediaStore!!
-                val fileUri: Uri = compat.currentPhotoUri
-                val filePath: String = compat.currentPhotoPath
-
+                val fileUri: Uri = _mediaStore.currentPhotoUri
+                val filePath: String = _mediaStore.currentPhotoPath
                 if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
                     fragmentActivity.revokeUriPermission(
                         fileUri,
