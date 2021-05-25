@@ -7,8 +7,7 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.fragment.app.Fragment
-import com.sd.lib.media_store.uri.FMediaFileProvider
-import com.zhihu.matisse.internal.entity.CaptureStrategy
+import com.sd.lib.media_store.ext.CaptureStrategyFactory
 import com.zhihu.matisse.internal.utils.MediaStoreCompat
 import com.zhihu.matisse.internal.utils.SingleMediaScanner
 
@@ -21,7 +20,7 @@ internal abstract class MediaFragment : Fragment() {
     override fun onAttach(context: Context) {
         super.onAttach(context)
         mediaStore = MediaStoreCompat(context as Activity, this).also {
-            it.setCaptureStrategy(CaptureStrategy(true, FMediaFileProvider.getAuthority(context)))
+            it.setCaptureStrategy(CaptureStrategyFactory.defaultStrategy(context))
             it.dispatchCaptureIntent(context, REQUEST_CODE_CAMERA)
         }
     }

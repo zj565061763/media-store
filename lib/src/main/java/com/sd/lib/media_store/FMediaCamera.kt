@@ -55,7 +55,7 @@ object FMediaCamera {
     }
 
 
-    interface Callback {
+    fun interface Callback {
         fun onResult(uri: Uri)
     }
 }
