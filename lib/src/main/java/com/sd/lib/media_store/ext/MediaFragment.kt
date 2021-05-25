@@ -7,6 +7,8 @@ import android.net.Uri
 import android.os.Build
 import android.util.Log
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
+import com.sd.lib.media_store.FMediaCamera
 import com.zhihu.matisse.internal.utils.MediaStoreCompat
 import com.zhihu.matisse.internal.utils.SingleMediaScanner
 
@@ -16,7 +18,7 @@ class MediaFragment : Fragment() {
     private var _mediaStore: MediaStoreCompat? = null
         private set
 
-    var callback: Callback? = null
+    private var _callback: FMediaCamera.Callback? = null
 
     override fun onAttach(context: Context) {
         super.onAttach(context)
@@ -42,9 +44,9 @@ class MediaFragment : Fragment() {
                     )
                 }
                 SingleMediaScanner(fragmentActivity.applicationContext, filePath) { Log.i("MediaFragment", "scan finish!") }
-                callback?.onResult(fileUri)
+                notifyResult(fileUri)
             } else {
-                callback?.onResult(null)
+                notifyResult(null)
             }
 
             fragmentActivity.supportFragmentManager.beginTransaction()
@@ -52,14 +54,26 @@ class MediaFragment : Fragment() {
         }
     }
 
-    override fun onDetach() {
-        super.onDetach()
-        callback?.onDetach()
+    private fun notifyResult(uri: Uri?) {
+        _callback?.onResult(uri)
     }
 
-    interface Callback {
-        fun onResult(uri: Uri?)
+    companion object {
+        @JvmStatic
+        internal fun attach(activity: FragmentActivity, callback: FMediaCamera.Callback) {
+            if (activity.isFinishing) {
+                callback.onResult(null)
+                return
+            }
 
-        fun onDetach()
+            val fragment = MediaFragment().apply {
+                this._callback = callback
+            }
+
+            activity.supportFragmentManager
+                .beginTransaction()
+                .add(fragment, null)
+                .commitNowAllowingStateLoss()
+        }
     }
 }

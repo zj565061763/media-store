@@ -56,8 +56,9 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun clickCamera() {
-        FMediaCamera.setCallback(_cameraCallback)
-        FMediaCamera.getImage(this)
+        FMediaCamera.getImage(this) {
+            Log.i(TAG, "camera result:${it}")
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
@@ -66,17 +67,5 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             val listUri = Matisse.obtainResult(data)
             Log.i(TAG, "onActivityResult:${listUri}")
         }
-    }
-
-    /**
-     * 摄像头回调
-     */
-    private val _cameraCallback = FMediaCamera.Callback {
-        Log.i(TAG, "camera result:${it}")
-    }
-
-    override fun onDestroy() {
-        super.onDestroy()
-        FMediaCamera.removeCallback(_cameraCallback)
     }
 }
