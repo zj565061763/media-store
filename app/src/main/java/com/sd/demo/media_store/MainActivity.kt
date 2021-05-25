@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity(), View.OnClickListener {
             .capture(true)
             .captureStrategy(CaptureStrategyFactory.defaultStrategy(this))
             .countable(true)
-            .maxSelectable(2)
+            .maxSelectable(1)
             .imageEngine(GlideEngine())
             .forResult(REQUEST_CODE)
     }
