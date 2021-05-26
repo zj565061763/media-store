@@ -12,6 +12,9 @@ import java.io.File
 import java.util.*
 
 object FMediaVideo {
+    private const val DEFAULT_EXT = "mp4"
+    private const val DEFAULT_MIME_TYPE = "video/mp4"
+
     /**
      * 保存视频文件
      */
@@ -19,7 +22,7 @@ object FMediaVideo {
     fun saveFile(file: File?, context: Context): Uri? {
         if (file == null || !file.exists()) return null
 
-        val ext = LibUtils.getExt(file.absolutePath)
+        val ext = LibUtils.getExt(file.absolutePath, DEFAULT_EXT)
         val contentValues = createContentValues(ext)
 
         val resolver = context.contentResolver
@@ -36,12 +39,12 @@ object FMediaVideo {
     @JvmStatic
     private fun createContentValues(ext: String): ContentValues {
         val uuid = UUID.randomUUID().toString()
-        val finalExt = if (ext.isNotEmpty()) ext else "mp4"
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(finalExt) ?: "video/mp4"
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: DEFAULT_MIME_TYPE
+        val fullExt = LibUtils.fullExt(ext)
 
         return ContentValues().apply {
             this.put(MediaStore.Video.VideoColumns.TITLE, uuid)
-            this.put(MediaStore.Video.VideoColumns.DISPLAY_NAME, "${uuid}.${finalExt}")
+            this.put(MediaStore.Video.VideoColumns.DISPLAY_NAME, uuid + fullExt)
             this.put(MediaStore.Video.VideoColumns.DESCRIPTION, uuid)
             this.put(MediaStore.Video.VideoColumns.MIME_TYPE, mimeType)
 
