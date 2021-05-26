@@ -4,6 +4,7 @@ import android.os.Bundle
 import android.util.Log
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import com.bumptech.glide.Glide
 import com.sd.demo.media_store.databinding.ActivityMediaSaveBinding
 import com.sd.lib.dldmgr.DownloadInfo
 import com.sd.lib.dldmgr.FDownloadManager
@@ -57,6 +58,7 @@ class MediaSaveActivity : AppCompatActivity(), View.OnClickListener {
                     .permission(Permission.Group.STORAGE)
                     .onGranted {
                         val uri = FMediaImage.saveFile(file, applicationContext)
+                        Glide.with(this@MediaSaveActivity).load(uri).into(_binding.ivResult)
                         Log.i(TAG, "image saveFile:${uri}")
                     }.onDenied {
                         finish()
@@ -84,6 +86,7 @@ class MediaSaveActivity : AppCompatActivity(), View.OnClickListener {
                     .permission(Permission.Group.STORAGE)
                     .onGranted {
                         val uri = FMediaVideo.saveFile(file, applicationContext)
+                        Glide.with(this@MediaSaveActivity).load(uri).into(_binding.ivResult)
                         Log.i(TAG, "video saveFile:${uri}")
                     }.onDenied {
                         finish()
