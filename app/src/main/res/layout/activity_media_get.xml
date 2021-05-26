@@ -5,19 +5,19 @@
     android:orientation="vertical">
 
     <Button
-        android:id="@+id/btn_media_get"
+        android:id="@+id/btn_default"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClick"
-        android:text="media get"
+        android:text="default"
         android:textAllCaps="false" />
 
     <Button
-        android:id="@+id/btn_media_save"
+        android:id="@+id/btn_camera"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:onClick="onClick"
-        android:text="media save"
+        android:text="camera"
         android:textAllCaps="false" />
 
 </LinearLayout>
