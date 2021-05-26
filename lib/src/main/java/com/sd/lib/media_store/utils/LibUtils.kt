@@ -27,16 +27,43 @@ internal object LibUtils {
         return null
     }
 
+    /**
+     * 获取扩展名
+     */
     @JvmStatic
-    fun getExt(url: String?): String {
-        if (url == null) return ""
+    fun getExt(url: String?, defaultExt: String? = null): String {
+        val defaultExtFormat = if (defaultExt == null || defaultExt.isEmpty()) {
+            ""
+        } else {
+            if (defaultExt.startsWith(".")) defaultExt.substring(1) else defaultExt
+        }
+
+        if (url == null || url.isEmpty()) {
+            return defaultExtFormat
+        }
+
         var ext = MimeTypeMap.getFileExtensionFromUrl(url)
         if (ext == null || ext.isEmpty()) {
             val lastIndex = url.lastIndexOf(".")
-            if (lastIndex > 0) {
-                ext = url.substring(lastIndex + 1)
-            }
+            if (lastIndex >= 0) ext = url.substring(lastIndex + 1)
         }
-        return ext ?: ""
+
+        return if (ext == null || ext.isEmpty()) {
+            defaultExtFormat
+        } else {
+            ext
+        }
+    }
+
+    /**
+     * 完整扩展名
+     */
+    @JvmStatic
+    fun fullExt(ext: String?): String {
+        return if (ext == null || ext.isEmpty()) {
+            ""
+        } else {
+            if (ext.startsWith(".")) ext else ".$ext"
+        }
     }
 }

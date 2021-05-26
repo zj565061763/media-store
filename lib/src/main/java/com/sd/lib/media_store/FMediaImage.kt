@@ -12,6 +12,9 @@ import java.io.File
 import java.util.*
 
 object FMediaImage {
+    private const val DEFAULT_EXT = "jpg"
+    private const val DEFAULT_MIME_TYPE = "image/jpeg"
+
     /**
      * 保存图片文件
      */
@@ -19,7 +22,7 @@ object FMediaImage {
     fun saveFile(file: File?, context: Context): Uri? {
         if (file == null || !file.exists()) return null
 
-        val ext = LibUtils.getExt(file.absolutePath)
+        val ext = LibUtils.getExt(file.absolutePath, DEFAULT_EXT)
         val contentValues = createContentValues(ext)
 
         val resolver = context.contentResolver
@@ -36,12 +39,12 @@ object FMediaImage {
     @JvmStatic
     private fun createContentValues(ext: String): ContentValues {
         val uuid = UUID.randomUUID().toString()
-        val finalExt = if (ext.isNotEmpty()) ext else "jpg"
-        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(finalExt) ?: "image/jpeg"
+        val mimeType = MimeTypeMap.getSingleton().getMimeTypeFromExtension(ext) ?: DEFAULT_MIME_TYPE
+        val fullExt = LibUtils.fullExt(ext)
 
         return ContentValues().apply {
             this.put(MediaStore.Images.ImageColumns.TITLE, uuid)
-            this.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, "${uuid}.${finalExt}")
+            this.put(MediaStore.Images.ImageColumns.DISPLAY_NAME, uuid + fullExt)
             this.put(MediaStore.Images.ImageColumns.DESCRIPTION, uuid)
             this.put(MediaStore.Images.ImageColumns.MIME_TYPE, mimeType)
 
