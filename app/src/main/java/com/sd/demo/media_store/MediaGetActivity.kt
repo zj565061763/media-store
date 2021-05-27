@@ -59,7 +59,7 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
     private fun clickCamera() {
         FMediaCamera.getImage(this, object : FMediaCamera.Callback {
             override fun onResult(uri: Uri?) {
-                Log.i(TAG, "camera result:${uri}")
+                Log.i(TAG, "camera onResult:${uri}")
             }
 
             override fun onCancel() {
