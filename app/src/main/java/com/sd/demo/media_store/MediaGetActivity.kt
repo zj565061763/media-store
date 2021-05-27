@@ -1,6 +1,5 @@
 package com.sd.demo.media_store
 
-import android.content.Intent
 import android.net.Uri
 import android.os.Bundle
 import android.util.Log
@@ -14,10 +13,10 @@ import com.yanzhenjie.permission.runtime.Permission
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine
+import com.zhihu.matisse.sunday.callback.OnResultCallback
 
 class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
     private val TAG = MediaGetActivity::class.java.simpleName
-    private val REQUEST_CODE = 1223
 
     private lateinit var _binding: ActivityMediaGetBinding
 
@@ -53,7 +52,15 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
             .countable(true)
             .maxSelectable(1)
             .imageEngine(GlideEngine())
-            .forResult(REQUEST_CODE)
+            .forResult(object : OnResultCallback {
+                override fun onResult(list: MutableList<Uri>) {
+                    Log.i(TAG, "OnResultCallback onResult:${list}")
+                }
+
+                override fun onCancel() {
+                    Log.i(TAG, "OnResultCallback onCancel")
+                }
+            })
     }
 
     private fun clickCamera() {
@@ -66,13 +73,5 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
                 Log.i(TAG, "camera onCancel")
             }
         })
-    }
-
-    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
-        super.onActivityResult(requestCode, resultCode, data)
-        if (requestCode == REQUEST_CODE && resultCode == RESULT_OK) {
-            val listUri = Matisse.obtainResult(data)
-            Log.i(TAG, "onActivityResult:${listUri}")
-        }
     }
 }
