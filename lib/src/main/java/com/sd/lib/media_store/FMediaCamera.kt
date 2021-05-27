@@ -2,7 +2,9 @@ package com.sd.lib.media_store
 
 import android.net.Uri
 import androidx.fragment.app.FragmentActivity
-import com.sd.lib.media_store.ext.MediaFragment
+import com.sd.lib.media_store.ext.CaptureStrategyFactory
+import com.zhihu.matisse.sunday.callback.OnResultCallback
+import com.zhihu.matisse.sunday.fragment.CameraResultFragment
 
 object FMediaCamera {
     /**
@@ -10,10 +12,22 @@ object FMediaCamera {
      */
     @JvmStatic
     fun getImage(activity: FragmentActivity, callback: Callback) {
-        MediaFragment.attach(activity, callback)
+        val captureStrategy = CaptureStrategyFactory.defaultStrategy(activity);
+        CameraResultFragment.start(activity, captureStrategy, object : OnResultCallback {
+            override fun onResult(list: MutableList<Uri>) {
+                val uri = list.firstOrNull()
+                callback.onResult(uri)
+            }
+
+            override fun onCancel() {
+                callback.onCancel()
+            }
+        })
     }
 
-    fun interface Callback {
+    interface Callback {
         fun onResult(uri: Uri?)
+
+        fun onCancel()
     }
 }

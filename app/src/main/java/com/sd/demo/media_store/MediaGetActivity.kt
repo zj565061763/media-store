@@ -1,6 +1,7 @@
 package com.sd.demo.media_store
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
@@ -56,9 +57,15 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
     }
 
     private fun clickCamera() {
-        FMediaCamera.getImage(this) {
-            Log.i(TAG, "camera result:${it}")
-        }
+        FMediaCamera.getImage(this, object : FMediaCamera.Callback {
+            override fun onResult(uri: Uri?) {
+                Log.i(TAG, "camera result:${uri}")
+            }
+
+            override fun onCancel() {
+                Log.i(TAG, "camera onCancel")
+            }
+        })
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
