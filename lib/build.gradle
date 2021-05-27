@@ -6,8 +6,8 @@ plugins {
 
 def libGroupId = "com.sd.lib.android"
 def libArtifactId = "media-store"
-def libVersionCode = 20210526
-def libVersionName = "1.0.0-alpha02"
+def libVersionCode = 20210527
+def libVersionName = "1.0.0-alpha03"
 
 android {
     compileSdkVersion 30
