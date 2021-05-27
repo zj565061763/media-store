@@ -66,7 +66,7 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
         Matisse.from(this)
             .choose(MimeType.ofImage())
             .capture(true)
-            .captureStrategy(CaptureStrategyFactory.defaultStrategy(this))
+            .captureStrategy(CaptureStrategyFactory.defaultPublic(this))
             .countable(true)
             .maxSelectable(1)
             .imageEngine(GlideEngine())

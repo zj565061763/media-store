@@ -12,7 +12,7 @@ object FMediaCamera {
      */
     @JvmStatic
     fun getImage(activity: FragmentActivity, callback: Callback) {
-        val captureStrategy = CaptureStrategyFactory.defaultStrategy(activity);
+        val captureStrategy = CaptureStrategyFactory.defaultPublic(activity);
         CameraResultFragment.start(activity, captureStrategy, object : OnResultCallback {
             override fun onResult(list: MutableList<Uri>) {
                 val uri = list.firstOrNull()

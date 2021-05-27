@@ -6,7 +6,12 @@ import com.zhihu.matisse.internal.entity.CaptureStrategy
 
 object CaptureStrategyFactory {
     @JvmStatic
-    fun defaultStrategy(context: Context): CaptureStrategy {
+    fun defaultPublic(context: Context): CaptureStrategy {
         return CaptureStrategy(true, FMediaFileProvider.getAuthority(context))
+    }
+
+    @JvmStatic
+    fun defaultPrivate(context: Context): CaptureStrategy {
+        return CaptureStrategy(false, FMediaFileProvider.getAuthority(context))
     }
 }
