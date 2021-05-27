@@ -4,6 +4,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.sd.demo.media_store.databinding.ActivityMediaGetBinding
 import com.sd.lib.media_store.FMediaCamera
@@ -13,6 +14,7 @@ import com.yanzhenjie.permission.runtime.Permission
 import com.zhihu.matisse.Matisse
 import com.zhihu.matisse.MimeType
 import com.zhihu.matisse.engine.impl.GlideEngine
+import com.zhihu.matisse.sunday.callback.OnCaptureClickCallback
 import com.zhihu.matisse.sunday.callback.OnResultCallback
 
 class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
@@ -39,12 +41,28 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
                 clickDefault()
             }
             _binding.btnCamera -> {
-                clickCamera()
+                AndPermission.with(this@MediaGetActivity).runtime()
+                    .permission(Permission.CAMERA)
+                    .onGranted {
+                        clickCamera()
+                    }.onDenied {
+                        Toast.makeText(this@MediaGetActivity, "permission onDenied", Toast.LENGTH_SHORT).show()
+                    }.start()
             }
         }
     }
 
     private fun clickDefault() {
+        val onCaptureClickCallback = OnCaptureClickCallback { task ->
+            AndPermission.with(this@MediaGetActivity).runtime()
+                .permission(Permission.CAMERA)
+                .onGranted {
+                    task.run()
+                }.onDenied {
+                    Toast.makeText(this@MediaGetActivity, "permission onDenied", Toast.LENGTH_SHORT).show()
+                }.start()
+        }
+
         Matisse.from(this)
             .choose(MimeType.ofImage())
             .capture(true)
@@ -52,6 +70,7 @@ class MediaGetActivity : AppCompatActivity(), View.OnClickListener {
             .countable(true)
             .maxSelectable(1)
             .imageEngine(GlideEngine())
+            .setOnCaptureClickCallback(onCaptureClickCallback)
             .forResult(object : OnResultCallback {
                 override fun onResult(list: MutableList<Uri>) {
                     Log.i(TAG, "OnResultCallback onResult:${list}")
